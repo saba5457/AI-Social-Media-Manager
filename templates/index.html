@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Social Media Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #F0F4FF; min-height: 100vh; }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+        }
+        .navbar-logo { font-size: 1.5rem; }
+        .navbar-title { font-size: 1.1rem; font-weight: 700; color: #1E293B; }
+        .navbar-sub { font-size: 0.78rem; color: #94A3B8; margin-left: 4px; }
+        .navbar-badge {
+            margin-left: auto;
+            background: #EEF2FF;
+            color: #4F46E5;
+            border: 1px solid #C7D2FE;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .main {
+            display: flex;
+            max-width: 1100px;
+            margin: 32px auto;
+            gap: 24px;
+            padding: 0 24px;
+        }
+
+        .sidebar { width: 220px; flex-shrink: 0; }
+        .sidebar-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+
+        .tool-btn {
+            width: 100%;
+            background: white;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .tool-btn:hover { border-color: #4F46E5; background: #F8F9FF; }
+        .tool-btn.active { background: #4F46E5; border-color: #4F46E5; }
+        .tool-btn.active .tool-name { color: white; }
+        .tool-btn.active .tool-desc { color: rgba(255,255,255,0.7); }
+        .tool-icon { font-size: 1.2rem; }
+        .tool-name { font-size: 0.85rem; font-weight: 600; color: #1E293B; }
+        .tool-desc { font-size: 0.72rem; color: #94A3B8; margin-top: 1px; }
+
+        /* Platform color dots */
+        .dot { width: 8px; height: 8px; border-radius: 50%; margin-left: auto; flex-shrink: 0; }
+        .dot-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+        .dot-li { background: #0077B5; }
+        .dot-tw { background: #1DA1F2; }
+        .dot-tk { background: #010101; }
+        .dot-fb { background: #1877F2; }
+        .dot-all { background: linear-gradient(45deg, #4F46E5, #7C3AED); }
+
+        .content { flex: 1; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 20px;
+            border: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .stat-icon {
+            width: 44px; height: 44px;
+            background: #EEF2FF;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .stat-value { font-size: 1.2rem; font-weight: 700; color: #1E293B; }
+        .stat-label { font-size: 0.75rem; color: #94A3B8; margin-top: 1px; }
+
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            border: 1px solid #E2E8F0;
+            margin-bottom: 20px;
+        }
+        .content-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .content-icon { font-size: 1.8rem; }
+        .content-title { font-size: 1.1rem; font-weight: 700; color: #1E293B; }
+        .content-sub { font-size: 0.8rem; color: #94A3B8; margin-top: 2px; }
+
+        .input-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+            display: block;
+        }
+        textarea {
+            width: 100%;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.88rem;
+            color: #334155;
+            resize: vertical;
+            outline: none;
+            min-height: 100px;
+            transition: border 0.2s;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        textarea:focus { border-color: #4F46E5; }
+        textarea::placeholder { color: #CBD5E1; }
+
+        .section-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 16px 0 8px;
+        }
+
+        .tone-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tone-chip {
+            background: #F8F9FF;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tone-chip:hover { border-color: #4F46E5; color: #4F46E5; }
+        .tone-chip.selected { background: #EEF2FF; border-color: #4F46E5; color: #4F46E5; font-weight: 600; }
+
+        .run-btn {
+            background: #4F46E5;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px 28px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 14px rgba(79,70,229,0.3);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+        .run-btn:hover { background: #4338CA; transform: translateY(-1px); }
+        .run-btn:disabled { background: #A5B4FC; cursor: not-allowed; transform: none; }
+
+        .result-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            border: 1px solid #E2E8F0;
+            display: none;
+        }
+        .result-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .result-title { font-size: 1rem; font-weight: 700; color: #1E293B; margin-bottom: 6px; }
+        .humanized-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+            color: #166534;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+        .copy-btn {
+            background: #F1F5F9;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .copy-btn:hover { background: #E2E8F0; }
+
+        #result-content {
+            color: #334155;
+            font-size: 0.92rem;
+            line-height: 1.85;
+            white-space: pre-wrap;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 32px;
+        }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid #E2E8F0;
+            border-top: 3px solid #4F46E5;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        .loader p { color: #94A3B8; font-size: 0.88rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="navbar-logo">📱</div>
+        <div>
+            <span class="navbar-title">AI Social Media Manager</span>
+            <span class="navbar-sub">Human-style content — no AI feel</span>
+        </div>
+        <div class="navbar-badge">✦ Humanized AI</div>
+    </div>
+
+    <div class="main">
+        <div class="sidebar">
+            <div class="sidebar-label">Platforms</div>
+
+            <button class="tool-btn active" onclick="selectTool('instagram', this)">
+                <span class="tool-icon">📸</span>
+                <div style="flex:1">
+                    <div class="tool-name">Instagram</div>
+                    <div class="tool-desc">Captions</div>
+                </div>
+                <div class="dot dot-ig"></div>
+            </button>
+
+            <button class="tool-btn" onclick="selectTool('linkedin', this)">
+                <span class="tool-icon">💼</span>
+                <div style="flex:1">
+                    <div class="tool-name">LinkedIn</div>
+                    <div class="tool-desc">Professional posts</div>
+                </div>
+                <div class="dot dot-li"></div>
+            </button>
+
+            <button class="tool-btn" onclick="selectTool('twitter', this)">
+                <span class="tool-icon">𝕏</span>
+                <div style="flex:1">
+                    <div class="tool-name">Twitter / X</div>
+                    <div class="tool-desc">Short tweets</div>
+                </div>
+                <div class="dot dot-tw"></div>
+            </button>
+
+            <button class="tool-btn" onclick="selectTool('tiktok', this)">
+                <span class="tool-icon">🎵</span>
+                <div style="flex:1">
+                    <div class="tool-name">TikTok</div>
+                    <div class="tool-desc">Video captions</div>
+                </div>
+                <div class="dot dot-tk"></div>
+            </button>
+
+            <button class="tool-btn" onclick="selectTool('facebook', this)">
+                <span class="tool-icon">👥</span>
+                <div style="flex:1">
+                    <div class="tool-name">Facebook</div>
+                    <div class="tool-desc">Community posts</div>
+                </div>
+                <div class="dot dot-fb"></div>
+            </button>
+
+            <button class="tool-btn" onclick="selectTool('full_pack', this)">
+                <span class="tool-icon">📦</span>
+                <div style="flex:1">
+                    <div class="tool-name">Full Pack</div>
+                    <div class="tool-desc">All 5 platforms</div>
+                </div>
+                <div class="dot dot-all"></div>
+            </button>
+        </div>
+
+        <div class="content">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📱</div>
+                    <div>
+                        <div class="stat-value">5 Platforms</div>
+                        <div class="stat-label">All covered</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div>
+                        <div class="stat-value">Human Style</div>
+                        <div class="stat-label">No AI feel</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✍️</div>
+                    <div>
+                        <div class="stat-value">5 Tones</div>
+                        <div class="stat-label">Your choice</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="content-header">
+                    <span class="content-icon" id="tool-icon">📸</span>
+                    <div>
+                        <div class="content-title" id="tool-title">Instagram Caption</div>
+                        <div class="content-sub" id="tool-sub">Describe your post — AI writes human-style caption</div>
+                    </div>
+                </div>
+
+                <label class="input-label">What do you want to post about?</label>
+                <textarea id="userInput" placeholder="e.g. Just launched my clothing brand after 6 months of hard work..."></textarea>
+
+                <div class="section-label">Select Tone</div>
+                <div class="tone-row">
+                    <div class="tone-chip selected" onclick="selectTone(this, 'casual')">😊 Casual</div>
+                    <div class="tone-chip" onclick="selectTone(this, 'professional')">💼 Professional</div>
+                    <div class="tone-chip" onclick="selectTone(this, 'witty')">😄 Witty</div>
+                    <div class="tone-chip" onclick="selectTone(this, 'emotional')">❤️ Emotional</div>
+                    <div class="tone-chip" onclick="selectTone(this, 'minimal')">✨ Minimal</div>
+                </div>
+
+                <button class="run-btn" onclick="generateContent()">
+                    ✍️ Generate Content
+                </button>
+            </div>
+
+            <div class="loader" id="loader">
+                <div class="spinner"></div>
+                <p>Writing human-style content...</p>
+            </div>
+
+            <div class="result-card" id="resultCard">
+                <div class="result-top">
+                    <div>
+                        <div class="result-title">Generated Content</div>
+                        <div class="humanized-badge">✅ Human-style — No AI patterns</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyResult()">📋 Copy</button>
+                </div>
+                <div id="result-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTool = 'instagram';
+        let currentTone = 'casual';
+
+        const toolConfig = {
+            instagram: { icon: '📸', title: 'Instagram Caption', sub: 'Describe your post — AI writes human-style caption' },
+            linkedin: { icon: '💼', title: 'LinkedIn Post', sub: 'Share your professional insight or story' },
+            twitter: { icon: '𝕏', title: 'Twitter / X Tweet', sub: 'Short, direct, real — under 280 characters' },
+            tiktok: { icon: '🎵', title: 'TikTok Caption & Script', sub: 'Hook + content idea for your video' },
+            facebook: { icon: '👥', title: 'Facebook Post', sub: 'Community-style post with engagement question' },
+            full_pack: { icon: '📦', title: 'Full Content Pack', sub: 'Get content for all 5 platforms at once' }
+        };
+
+        function selectTool(tool, btn) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const config = toolConfig[tool];
+            document.getElementById('tool-icon').textContent = config.icon;
+            document.getElementById('tool-title').textContent = config.title;
+            document.getElementById('tool-sub').textContent = config.sub;
+            document.getElementById('userInput').value = '';
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        function selectTone(chip, tone) {
+            currentTone = tone;
+            document.querySelectorAll('.tone-chip').forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+        }
+
+        async function generateContent() {
+            const input = document.getElementById('userInput').value.trim();
+            if (!input) { alert('Please describe what you want to post about!'); return; }
+
+            const btn = document.querySelector('.run-btn');
+            const loader = document.getElementById('loader');
+            const resultCard = document.getElementById('resultCard');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Writing...';
+            loader.style.display = 'block';
+            resultCard.style.display = 'none';
+
+            try {
+                const res = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tool: currentTool, input, tone: currentTone })
+                });
+                const data = await res.json();
+                loader.style.display = 'none';
+                resultCard.style.display = 'block';
+                document.getElementById('result-content').textContent = data.result;
+                resultCard.scrollIntoView({ behavior: 'smooth' });
+            } catch (e) {
+                loader.style.display = 'none';
+                alert('Error! Please try again.');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '✍️ Generate Content';
+        }
+
+        function copyResult() {
+            const text = document.getElementById('result-content').textContent;
+            navigator.clipboard.writeText(text);
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => btn.textContent = '📋 Copy', 2000);
+        }
+    </script>
+</body>
+</html>
